@@ -88,29 +88,15 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        const order = {
-            ingredients: this.state.ingredients,
-            totalPrice: this.state.totalPrice,
-            costumer: {
-                name: 'Onnig Panossian',
-                adress: 'Av. Kimbalache 111',
-                email: 'onnigpano@gmail.com',
-                zipCode: '1437'
-            },
-            deliveryMethod: 'fastest'
+        const queryParams = [];
+        for (let i in this.state.ingredients) {
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));       
         }
-
-        this.setState({spinner: true});
-
-         axios.post('/orders.json', order)
-         .then( response => {
-             console.log(response);
-             this.setState({spinner: false, purchasing: false});
-         })
-         .catch( error => {
-             console.log(error);
-             this.setState({spinner: false, purchasing: false});
-         });
+        const queryString = queryParams.join('&');
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        });
     }
 
     componentDidMount() {
@@ -133,7 +119,7 @@ class BurgerBuilder extends Component {
             disableInfo[key] = disableInfo[key] <=0;
         }
 
-        let burger = this.state.error ? <p>Error papu, no carge ingredientes desde axios.get</p> : <Spinner />;
+        let burger = this.state.error ? <p>Error papu, no carga ingredientes desde axios.get</p> : <Spinner />;
         let orderSummary = null;
 
         if(this.state.ingredients) {
