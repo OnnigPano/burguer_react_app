@@ -1,52 +1,33 @@
 import React, { Component } from "react";
 
 import CheckoutSummary from '../../components/CheckoutSummary/CheckoutSummary';
-import axios from '../../axios-orders';
-import Spinner from '../../components/UI/Spinner/Spinner';
+import { Route } from 'react-router-dom';
+import ContactData from './ContactData/ContactData';
 
 
 class Checkout extends Component {
 
     state = {
         ingredients:null,
-        spinner: true
+        totalPrice: 0
     }
 
     componentWillMount() {
         const query = new URLSearchParams(this.props.location.search);
         const ingredients = {};
+        let price = 0;
         for (let param of query.entries()) {
-            ingredients[param[0]] = +param[1];
+            if (param[0] === 'price') {
+                price = param[1];
+            } else {
+                ingredients[param[0]] = +param[1];
+            }
         }
-        this.setState({ingredients: ingredients});
+        this.setState({ingredients: ingredients, totalPrice: price});
     }
 
     continueOrderHandler = () => {
-           
-         const order = {
-             ingredients: this.state.ingredients,
-             totalPrice: this.state.totalPrice,
-             costumer: {
-                 name: 'Onnig Panossian',
-                 adress: 'Av. Kimbalache 111',
-                 email: 'onnigpano@gmail.com',
-                 zipCode: '1437'
-             },
-             deliveryMethod: 'fastest'
-         }
-
-         this.setState({spinner: true});
-
-
-          axios.post('/orders.json', order)
-          .then( response => {
-              console.log(response);
-              this.setState({spinner: false});
-          })
-          .catch( error => {
-              console.log(error);
-              this.setState({spinner: false});
-          });
+        this.props.history.replace('/checkout/contact-data');
     }
 
     cancelOrderHandler = () => {
@@ -61,6 +42,9 @@ class Checkout extends Component {
                 cancelOrder={this.cancelOrderHandler}
                 continueOrder={this.continueOrderHandler}
                 />
+                <Route 
+                path={ this.props.match.path + '/contact-data' } 
+                render={(props) => (<ContactData ingredients={this.state.ingredients} price={this.state.totalPrice} {...props}/>) }/>
             </div>    
         );
     }
