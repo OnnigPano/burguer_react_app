@@ -8,76 +8,69 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary'
 import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import { connect } from 'react-redux';
+import * as actionTypes from './../../store/actions';
 
-const INGREDIENT_PRICES = {
-    salad: 0.4,
-    bacon: 0.5,
-    meat: 1.3,
-    cheese: 0.7,
-    error: false
-}
+
 
 class BurgerBuilder extends Component {
 
     state = {
-        ingredients : null,
-        totalPrice : 4,
-        purchasable: false,
         purchasing: false,
-        spinner: false
+        spinner: false,
+        error: false
     }
 
-    isPurchasableHandler = (ingredients) => {
-        const sum = Object.values(ingredients)
+    isPurchasableHandler = () => {
+        const sum = Object.values(this.props.ings)
             .reduce((acum, elem) => {
                 return acum + elem;
             }, 0);
         
-        this.setState({
-            purchasable: sum > 0
-        });
+            return sum > 0
+        
     }
 
-    addIngredientsHandler = (type) => {
-        const cantidad = this.state.ingredients[type];
-        const cantidadActualizada = cantidad + 1;
-        const nuevoStateIngredients = {
-            ...this.state.ingredients
-        }
-        nuevoStateIngredients[type] = cantidadActualizada;
+    // addIngredientsHandler = (type) => {
+    //     const cantidad = this.state.ingredients[type];
+    //     const cantidadActualizada = cantidad + 1;
+    //     const nuevoStateIngredients = {
+    //         ...this.state.ingredients
+    //     }
+    //     nuevoStateIngredients[type] = cantidadActualizada;
 
-        const precioIngredient = INGREDIENT_PRICES[type];
-        const precioTotalAnterior = this.state.totalPrice;
-        const nuevoPrecioTotal = precioTotalAnterior + precioIngredient;
+    //     const precioIngredient = INGREDIENT_PRICES[type];
+    //     const precioTotalAnterior = this.state.totalPrice;
+    //     const nuevoPrecioTotal = precioTotalAnterior + precioIngredient;
 
-        this.setState({ 
-            ingredients: nuevoStateIngredients,
-            totalPrice: nuevoPrecioTotal
-         });
-        this.isPurchasableHandler(nuevoStateIngredients);
-    }
+    //     this.setState({ 
+    //         ingredients: nuevoStateIngredients,
+    //         totalPrice: nuevoPrecioTotal
+    //      });
+    //     this.isPurchasableHandler(nuevoStateIngredients);
+    // }
 
-    removeIngredientsHandler = (type) => {
-        const cantidad = this.state.ingredients[type];
-        const cantidadActualizada = cantidad - 1;
-        if (cantidad <= 0) {
-            return;
-        }
-        const nuevoStateIngredients = {
-            ...this.state.ingredients
-        }
-        nuevoStateIngredients[type] = cantidadActualizada;
+    // removeIngredientsHandler = (type) => {
+    //     const cantidad = this.state.ingredients[type];
+    //     const cantidadActualizada = cantidad - 1;
+    //     if (cantidad <= 0) {
+    //         return;
+    //     }
+    //     const nuevoStateIngredients = {
+    //         ...this.state.ingredients
+    //     }
+    //     nuevoStateIngredients[type] = cantidadActualizada;
 
-        const precioIngredient = INGREDIENT_PRICES[type];
-        const precioTotalAnterior = this.state.totalPrice;
-        const nuevoPrecioTotal = precioTotalAnterior - precioIngredient;
+    //     const precioIngredient = INGREDIENT_PRICES[type];
+    //     const precioTotalAnterior = this.state.totalPrice;
+    //     const nuevoPrecioTotal = precioTotalAnterior - precioIngredient;
 
-        this.setState({ 
-            ingredients: nuevoStateIngredients,
-            totalPrice: nuevoPrecioTotal
-         });
-         this.isPurchasableHandler(nuevoStateIngredients);
-    }
+    //     this.setState({ 
+    //         ingredients: nuevoStateIngredients,
+    //         totalPrice: nuevoPrecioTotal
+    //      });
+    //      this.isPurchasableHandler(nuevoStateIngredients);
+    // }
 
     purchasingHandler = () => {
         this.setState({purchasing: true})
@@ -88,32 +81,34 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        const queryParams = [];
-        queryParams.push('price=' + this.state.totalPrice);
-        for (let i in this.state.ingredients) {
-            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));       
-        }
-        const queryString = queryParams.join('&');
-        this.props.history.push({
-            pathname: '/checkout',
-            search: '?' + queryString
-        });
+        // const queryParams = [];
+        // queryParams.push('price=' + this.state.totalPrice);
+        // for (let i in this.state.ingredients) {
+        //     queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));       
+        // }
+        // const queryString = queryParams.join('&');
+        // this.props.history.push({
+        //     pathname: '/checkout',
+        //     search: '?' + queryString
+        // });
+
+        this.props.history.push('/checkout');
     }
 
-    componentDidMount() {
-        axios.get('/ingredients.json')
-        .then( response => {
-            this.setState({ingredients: response.data});
-        } )
-        .catch( error => {
-            this.setState({error: error});
-        })
-    }
+    // componentDidMount() {
+    //     axios.get('/ingredients.json')
+    //     .then( response => {
+    //         this.setState({ingredients: response.data});
+    //     } )
+    //     .catch( error => {
+    //         this.setState({error: error});
+    //     })
+    // }
 
     render(){
 
         const disableInfo = {
-            ...this.state.ingredients
+            ...this.props.ings
         }
 
         for (let key in disableInfo) {
@@ -123,22 +118,22 @@ class BurgerBuilder extends Component {
         let burger = this.state.error ? <p>Error papu, no carga ingredientes desde axios.get</p> : <Spinner />;
         let orderSummary = null;
 
-        if(this.state.ingredients) {
+        if(this.props.ings) {
             orderSummary = this.state.spinner ? <Spinner /> : <OrderSummary 
-                ingredients={this.state.ingredients} 
+                ingredients={this.props.ings} 
                 purchaseContinued={this.purchaseContinueHandler}
                 purchaseCancelled={this.purchaseCancelHandler}
-                price={this.state.totalPrice}
+                price={this.props.totalPrice}
             />;
             burger = (
                 <Aux>
-                    <Burger ingredients={this.state.ingredients} />
+                    <Burger ingredients={this.props.ings} />
                     <BuildControls 
-                    add={this.addIngredientsHandler}
-                    remove={this.removeIngredientsHandler}
+                    add={this.props.addIngredient}
+                    remove={this.props.removeIngredient}
                     disabled={disableInfo}
-                    price={this.state.totalPrice}
-                    purchasable={this.state.purchasable}
+                    price={this.props.totalPrice}
+                    purchasable={this.isPurchasableHandler()}
                     purchasing={this.purchasingHandler}
                     />
                 </Aux>
@@ -155,4 +150,18 @@ class BurgerBuilder extends Component {
     }
 }
 
-export default withErrorHandler(BurgerBuilder, axios);
+const mapStateToProps = state => {
+    return {
+        ings: state.ingredients,
+        totalPrice: state.totalPrice
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        addIngredient: (ingName) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredientType: ingName}),
+        removeIngredient: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientType: ingName})
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
