@@ -9,7 +9,7 @@ import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import { connect } from 'react-redux';
-import * as actionTypes from './../../store/actions';
+import * as actions from '../../store/actions/index';
 
 
 
@@ -18,7 +18,6 @@ class BurgerBuilder extends Component {
     state = {
         purchasing: false,
         spinner: false,
-        error: false
     }
 
     isPurchasableHandler = () => {
@@ -95,15 +94,9 @@ class BurgerBuilder extends Component {
         this.props.history.push('/checkout');
     }
 
-    // componentDidMount() {
-    //     axios.get('/ingredients.json')
-    //     .then( response => {
-    //         this.setState({ingredients: response.data});
-    //     } )
-    //     .catch( error => {
-    //         this.setState({error: error});
-    //     })
-    // }
+     componentDidMount() {
+        this.props.setIngredients();
+     }
 
     render(){
 
@@ -115,7 +108,7 @@ class BurgerBuilder extends Component {
             disableInfo[key] = disableInfo[key] <=0;
         }
 
-        let burger = this.state.error ? <p>Error papu, no carga ingredientes desde axios.get</p> : <Spinner />;
+        let burger = this.props.error ? <p>Error papu, no carga ingredientes desde axios.get</p> : <Spinner />;
         let orderSummary = null;
 
         if(this.props.ings) {
@@ -153,14 +146,16 @@ class BurgerBuilder extends Component {
 const mapStateToProps = state => {
     return {
         ings: state.ingredients,
-        totalPrice: state.totalPrice
+        totalPrice: state.totalPrice,
+        error: state.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        addIngredient: (ingName) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredientType: ingName}),
-        removeIngredient: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientType: ingName})
+        addIngredient: (ingName) => dispatch(actions.addIngredient(ingName)),
+        removeIngredient: (ingName) => dispatch(actions.removeIngredient(ingName)),
+        setIngredients: () => dispatch(actions.setIngredients())
     }
 }
 
