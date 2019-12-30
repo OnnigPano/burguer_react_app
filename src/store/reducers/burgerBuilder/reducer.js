@@ -10,7 +10,8 @@ const INGREDIENT_PRICES = {
 const initialState = {
     ingredients: null,
     totalPrice: 4,
-    error: false
+    error: false,
+    loading: true
 }
 
 const reducer = (state = initialState, action) => {
@@ -41,13 +42,15 @@ const reducer = (state = initialState, action) => {
                     bacon: action.ingredients.bacon,
                     cheese: action.ingredients.cheese,
                     meat: action.ingredients.meat
-                }
+                },
+                loading: false
             }  
         case actionTypes.SET_INGREDIENTS_FAILED:
-                return {
-                    ...state,
-                    error: true
-                }       
+            return {
+                ...state,
+                error: true,
+                loading: false 
+            }                      
         default:
             return state;
             

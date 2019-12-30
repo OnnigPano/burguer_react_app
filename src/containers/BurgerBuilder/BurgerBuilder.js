@@ -16,8 +16,11 @@ import * as actions from '../../store/actions/index';
 class BurgerBuilder extends Component {
 
     state = {
-        purchasing: false,
-        spinner: false,
+        purchasing: false
+    }
+
+    componentDidMount() {
+        this.props.setIngredients();
     }
 
     isPurchasableHandler = () => {
@@ -94,9 +97,7 @@ class BurgerBuilder extends Component {
         this.props.history.push('/checkout');
     }
 
-     componentDidMount() {
-        this.props.setIngredients();
-     }
+     
 
     render(){
 
@@ -112,7 +113,7 @@ class BurgerBuilder extends Component {
         let orderSummary = null;
 
         if(this.props.ings) {
-            orderSummary = this.state.spinner ? <Spinner /> : <OrderSummary 
+            orderSummary = this.props.loading ? <Spinner /> : <OrderSummary 
                 ingredients={this.props.ings} 
                 purchaseContinued={this.purchaseContinueHandler}
                 purchaseCancelled={this.purchaseCancelHandler}
@@ -145,9 +146,10 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients,
-        totalPrice: state.totalPrice,
-        error: state.error
+        ings: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        error: state.burgerBuilder.error,
+        loading: state.burgerBuilder.loading
     }
 }
 
