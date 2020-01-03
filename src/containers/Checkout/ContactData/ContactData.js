@@ -6,6 +6,9 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import axios from '../../../axios-orders';
 import Input from '../../../components/UI/Input/Input';
 import { connect } from 'react-redux';
+import * as actions from '../../../store/actions/index';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import { Redirect } from 'react-router-dom';
 
 class ContactData extends Component {
     state = {
@@ -60,8 +63,7 @@ class ContactData extends Component {
                 },
                 value: ''
             },
-        },
-        spinner: false
+        }
     }
 
     inputChangeHandler = (event, inputName) => {
@@ -88,23 +90,14 @@ class ContactData extends Component {
                 totalPrice: this.props.totalPrice,
                 orderData: formData
             }
-
-            this.setState({spinner: true});
-
-
-           axios.post('/orders.json', order)
-           .then( response => {
-               console.log(response);
-               this.setState({spinner: false});
-               this.props.history.push('/');
-           })
-           .catch( error => {
-               console.log(error);
-               this.setState({spinner: false});
-           });
+            this.props.orderInit(order);
     }
 
     render() {
+
+        if (this.props.purchased) {
+            return <Redirect to='/' />;
+        }
 
         const inputElementsArray = [];
 
@@ -131,7 +124,7 @@ class ContactData extends Component {
             </form>    
         );
 
-        if(this.state.spinner) {
+        if(this.props.spinner) {
             form = <Spinner />;
         }
 
@@ -147,8 +140,16 @@ class ContactData extends Component {
 const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
-        totalPrice: state.burgerBuilder.totalPrice
+        totalPrice: state.burgerBuilder.totalPrice,
+        spinner: state.orders.loading,
+        purchased: state.orders.purchased
     }
 }
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch => {
+    return {
+        orderInit: (order) => dispatch(actions.orderInit(order))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios));

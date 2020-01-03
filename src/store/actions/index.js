@@ -5,5 +5,7 @@ export {
 } from './burgerBuilder/actions';
 
 export {
-    fetchOrders
+    fetchOrders,
+    orderInit,
+    orderPurchasedReset
 } from './orders/actions';

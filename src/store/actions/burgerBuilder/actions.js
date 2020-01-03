@@ -21,9 +21,9 @@ const setIngredientsFailed = () => {
     }
 }
 
-const setIngredientsSucces = (ingredients) => {
+const setIngredientsSuccess = (ingredients) => {
     return {
-        type: actionTypes.SET_INGREDIENTS_SUCCES,
+        type: actionTypes.SET_INGREDIENTS_SUCCESS,
         ingredients: ingredients
     }
 }
@@ -32,7 +32,7 @@ export const setIngredients = () => {
     return dispatch => {
         axios.get('/ingredients.json')
             .then(response => {
-                dispatch(setIngredientsSucces(response.data));
+                dispatch(setIngredientsSuccess(response.data));
             })
             .catch(error => {
                 dispatch(setIngredientsFailed());

@@ -15,13 +15,19 @@ const fetchOrdersFailed = () => {
     }
 }
 
+const fetchOrdersInit = () => {
+    return {
+        type: actionTypes.FETCH_ORDERS_INIT
+    }
+}
+
 
 export const fetchOrders = () => {
     return dispatch => {
+        dispatch(fetchOrdersInit());
         axios.get('/orders.json')
             .then( res => {
                 let orders = [];
-                console.log(res);
                 for (let key in res.data) {
                     orders.push(
                         {...res.data[key],
@@ -35,6 +41,43 @@ export const fetchOrders = () => {
             });
     }
 }  
+
+export const orderInit = (order) => {
+    return dispatch => {
+        dispatch(orderLoadStart());
+        axios.post('/orders.json', order)
+           .then( response => {
+               dispatch(orderSuccess());
+           })
+           .catch( error => {
+               dispatch(orderFailed());
+           });
+    }
+}
+
+const orderFailed = () => {
+    return {
+        type: actionTypes.ORDER_FAILED
+    }
+}
+
+const orderSuccess = () => {
+    return {
+        type: actionTypes.ORDER_SUCCESS
+    }
+}
+
+const orderLoadStart = () => {
+    return {
+        type: actionTypes.ORDER_LOADING
+    }
+}
+
+export const orderPurchasedReset = () => {
+    return {
+        type: actionTypes.ORDER_PURCHASED_RESET
+    }
+}
 
 
 

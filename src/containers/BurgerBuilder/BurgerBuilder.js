@@ -93,7 +93,9 @@ class BurgerBuilder extends Component {
         //     pathname: '/checkout',
         //     search: '?' + queryString
         // });
-
+        if (this.props.purchasedValue) {
+            this.props.purchasedResetState(); 
+        }
         this.props.history.push('/checkout');
     }
 
@@ -149,7 +151,8 @@ const mapStateToProps = state => {
         ings: state.burgerBuilder.ingredients,
         totalPrice: state.burgerBuilder.totalPrice,
         error: state.burgerBuilder.error,
-        loading: state.burgerBuilder.loading
+        loading: state.burgerBuilder.loading,
+        purchasedValue: state.orders.purchased
     }
 }
 
@@ -157,7 +160,8 @@ const mapDispatchToProps = dispatch => {
     return {
         addIngredient: (ingName) => dispatch(actions.addIngredient(ingName)),
         removeIngredient: (ingName) => dispatch(actions.removeIngredient(ingName)),
-        setIngredients: () => dispatch(actions.setIngredients())
+        setIngredients: () => dispatch(actions.setIngredients()),
+        purchasedResetState: () => dispatch(actions.orderPurchasedReset())
     }
 }
 
