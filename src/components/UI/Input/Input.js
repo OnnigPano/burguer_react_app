@@ -6,20 +6,26 @@ const input = (props) => {
 
     let inputElement = null;
 
+    const inputClasses = [styles.InputElement];
+
+    if (props.invalid && props.shouldValidate && props.touched) {
+        inputClasses.push(styles.Invalid);
+    }
+
     switch (props.inputType) {
         case 'input':
             inputElement = (
-                <input onChange={props.changed} className={styles.InputElement} {...props.inputConfig} value={props.value} />
+                <input onChange={props.changed} className={inputClasses.join(' ')} {...props.inputConfig} value={props.value} />
             );
             break;
         case 'textarea':
             inputElement = (
-                <textarea onChange={props.changed} className={styles.InputElement} {...props.inputConfig} value={props.value} />
+                <textarea onChange={props.changed} className={inputClasses.join(' ')} {...props.inputConfig} value={props.value} />
             );
             break;
         case 'select':
             inputElement = (
-                <select onChange={props.changed} className={styles.InputElement}>
+                <select onChange={props.changed} className={inputClasses.join(' ')}>
                     <option>--Select Delivery Method --</option>
                     {props.inputConfig.options.map(op => {
                         return(
@@ -31,7 +37,7 @@ const input = (props) => {
             break;        
         default:
             inputElement = (
-                <input className={styles.InputElement} {...props.inputConfig} value={props.value} />
+                <input className={inputClasses.join(' ')} {...props.inputConfig} value={props.value} />
             );
             break;
     }
