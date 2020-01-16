@@ -9,3 +9,7 @@ export {
     orderInit,
     orderPurchasedReset
 } from './orders/actions';
+
+export {
+    authInit
+} from './auth/actions';

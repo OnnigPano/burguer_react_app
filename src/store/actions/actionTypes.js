@@ -14,4 +14,8 @@ export const ORDER_FAILED = 'ORDER_FAILED';
 export const ORDER_LOADING = 'ORDER_LOADING';
 export const ORDER_PURCHASED_RESET = 'ORDER_PURCHASED_RESET';
 
+export const AUTH_INIT = 'AUTH_INIT';
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_FAILED = 'AUTH_FAILED';
+
 
