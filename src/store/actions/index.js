@@ -11,5 +11,7 @@ export {
 } from './orders/actions';
 
 export {
-    authInit
+    authInit,
+    logout,
+    checkAuthState
 } from './auth/actions';

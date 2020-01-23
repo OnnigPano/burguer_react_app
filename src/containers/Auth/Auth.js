@@ -7,6 +7,7 @@ import Button from '../../components/UI/Button/Button';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
 import styles from './Auth.module.css';
+import { Redirect } from "react-router-dom";
 
 
 class Auth extends Component {
@@ -21,7 +22,8 @@ class Auth extends Component {
                 },
                 value: '',
                 validation: {
-                    required: true
+                    required: true,
+                    email: true
                 },
                 isValid: false,
                 touched: false
@@ -30,7 +32,7 @@ class Auth extends Component {
                 inputType: 'input',
                 inputConfig: {
                     placeholder: 'Password',
-                    type: 'input'
+                    type: 'password'
                 },
                 value: '',
                 validation: {
@@ -84,6 +86,11 @@ class Auth extends Component {
         if (rules.maxLength) {
             isValid = value.trim().length <= rules.maxLength && isValid;
         }
+        const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (rules.email) {
+            isValid = emailRegex.test(value) && isValid;
+        }
 
         return isValid;
     }
@@ -113,8 +120,8 @@ class Auth extends Component {
         }
 
         let form = (
-            <div>
-                <form className={styles.AuthForm} onSubmit={this.authenticationHandler} >
+            <div className={styles.AuthForm}>
+                <form  onSubmit={this.authenticationHandler} >
                     {inputElementsArray.map( inputElement => {
                         return (
                             <Input 
@@ -128,9 +135,9 @@ class Auth extends Component {
                             changed={(event) => this.inputChangeHandler(event, inputElement.id)} />
                         );
                     })}
-                    <Button btnType='Success' disabled={!this.state.formValidity}>{ this.state.signUp ? 'SIGN UP' : 'SIGN IN' }</Button>
+                    <Button btnType='Success' disabled={!this.state.formValidity}>{ this.state.signUp ? 'REGISTRARSE' : 'INICIAR SESIÓN' }</Button>
                 </form>    
-                    <Button btnType='Danger' clicked={this.formHandler}>{ this.state.signUp ? 'SWITCH TO SIGN IN' : 'SWITCH TO SIGN UP' }</Button>
+                    <Button btnType='Danger' clicked={this.formHandler}>{ this.state.signUp ? '¿Ya estás registrado? Inicia Sesión' : '¿No tienes cuenta? Registrate!' }</Button>
             </div>    
         );
 
@@ -138,6 +145,9 @@ class Auth extends Component {
             form = <Spinner />;
         }
 
+        if (this.props.isAuth) {
+            form = <Redirect to="/" />;
+        }
 
         return form;
     }
@@ -145,7 +155,8 @@ class Auth extends Component {
 
 const mapStateToProps = state => {
     return {
-        loading: state.auth.loading
+        loading: state.auth.loading,
+        isAuth: state.auth.idToken
     }
 }
 

@@ -3,7 +3,7 @@ import * as actionTypes from '../../actions/actionTypes';
 const initialState = {
     idToken: null,
     refreshToken: null,
-    expiresIn: null,
+    localId: null,
     loading: false,
     error: null
 }
@@ -19,9 +19,9 @@ const reducer = (state = initialState, action) => {
         case actionTypes.AUTH_SUCCESS:
             return {
                 ...initialState,
-                idToken: action.data.idToken,
-                refreshToken: action.data.refreshToken,
-                expiresIn: action.data.expiresIn,
+                idToken: action.idToken,
+                refreshToken: action.refreshToken,
+                localId: action.localId,
                 loading: false
             }
         case actionTypes.AUTH_FAILED:
@@ -30,7 +30,13 @@ const reducer = (state = initialState, action) => {
                 loading: false,
                 error: action.error
             }
-    
+        case actionTypes.LOGOUT:
+            return {
+                ...initialState,
+                idToken: null,
+                refreshToken: null,
+                localId: null
+            }
         default: return state;
     }
 }
